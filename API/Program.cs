@@ -1,6 +1,9 @@
 namespace API {
     public class Program {
         public static void Main(string[] args) {
+
+            string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -10,7 +13,16 @@ namespace API {
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors(options => {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy => {
+                        policy.WithOrigins("http://localhost:4200").AllowAnyHeader().WithMethods("PUT", "DELETE", "GET", "POST"); ;
+                    });
+            });
+
             var app = builder.Build();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
