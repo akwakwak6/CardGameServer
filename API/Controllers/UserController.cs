@@ -1,5 +1,6 @@
 ﻿
 
+using API.SSE;
 using BLL.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,8 @@ namespace CardGameServer.Controllers {
                 Pseudo = u.pseudo,
                 Token = "ABCDEF" 
             };
+
+            
 
             return Ok(uc);
         }

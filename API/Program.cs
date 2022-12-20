@@ -1,3 +1,5 @@
+using API.SSE;
+
 namespace API {
     public class Program {
         public static void Main(string[] args) {
@@ -12,6 +14,8 @@ namespace API {
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<ServerSentEventsService>();
 
             builder.Services.AddCors(options => {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
