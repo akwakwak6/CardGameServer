@@ -9,16 +9,18 @@ namespace API.Controllers {
     public class DemoSSEController : ControllerBase {
 
         private readonly ServerSentEventsService _serverSentEventsService;
+        private readonly ServerSentEventsManager _sseTeamServ;
 
-        public DemoSSEController(ServerSentEventsService serverSentEventsService) {
+        public DemoSSEController(ServerSentEventsService serverSentEventsService, ServerSentEventsManager sseTeamServ) {
             _serverSentEventsService = serverSentEventsService;
+            _sseTeamServ = sseTeamServ;
         }
 
 
         [HttpGet]
         public async Task Test() {
 
-            //await HttpContext.SSEInitAsync();
+            //await HttpContext.SSEInitAsync();//TODO
             HttpContext.Response.Headers.Add("Cache-Control", "no-cache");
             HttpContext.Response.Headers.Add("Content-Type", "text/event-stream");
             await HttpContext.Response.Body.FlushAsync();
@@ -37,6 +39,48 @@ namespace API.Controllers {
 
         }
 
+        [HttpGet("createTeam")]
+        public async Task CreateTeam() {
+            //await HttpContext.SSEInitAsync();//TODO
+            HttpContext.Response.Headers.Add("Cache-Control", "no-cache");
+            HttpContext.Response.Headers.Add("Content-Type", "text/event-stream");
+            await HttpContext.Response.Body.FlushAsync();
+
+            ServerSentEventsClient client = new ServerSentEventsClient(HttpContext.Response);
+
+            Guid teamID = _sseTeamServ.CreateSseTeam();
+            Guid clientId = _sseTeamServ.AddCientToTeam(teamID, client);
+
+            Console.WriteLine("Create team " + teamID);
+
+            HttpContext.RequestAborted.WaitHandle.WaitOne();
+
+            _sseTeamServ.RemoveClientFromTeam(clientId, teamID);
+
+        }
+
+        [HttpPost("JoinTeam")]
+        public async Task JoinTeam(Guid teamId) {
+
+            //await HttpContext.SSEInitAsync();//TODO
+            HttpContext.Response.Headers.Add("Cache-Control", "no-cache");
+            HttpContext.Response.Headers.Add("Content-Type", "text/event-stream");
+            await HttpContext.Response.Body.FlushAsync();
+
+            ServerSentEventsClient client = new ServerSentEventsClient(HttpContext.Response);
+
+            Guid clientId = _sseTeamServ.AddCientToTeam(teamId, client);
+
+            Console.WriteLine("join team " + clientId);
+
+            HttpContext.RequestAborted.WaitHandle.WaitOne();
+
+            _sseTeamServ.RemoveClientFromTeam(clientId, teamId);
+
+        }
+
+
+
         public class Tp {
             public int Id { get; set; }
             public string Name { get; set; }
@@ -44,7 +88,7 @@ namespace API.Controllers {
             public List<string> List { get; set; }
         }
 
-            [HttpPost]
+        [HttpPost]
         public IActionResult Send(string msg) {
 
             Tp tp = new Tp() { Id = 2, Name = "Toto" };

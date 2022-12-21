@@ -16,6 +16,7 @@ namespace API {
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddSingleton<ServerSentEventsService>();
+            builder.Services.AddSingleton<ServerSentEventsManager>();
 
             builder.Services.AddCors(options => {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
