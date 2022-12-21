@@ -5,7 +5,6 @@ namespace API.Controllers {
     [Route("api/[controller]")]
     [ApiController]
 
-
     public class DemoSSEController : ControllerBase {
 
         private readonly ServerSentEventsService _serverSentEventsService;
@@ -39,6 +38,25 @@ namespace API.Controllers {
 
         }
 
+
+        [HttpGet("teams")]
+        public IActionResult GetTeams() {
+
+            return Ok(_sseTeamServ.getAllTeams());
+
+        }
+
+        [HttpPost("postToTeam")]
+        public IActionResult PostToTeam(Guid teamId) {
+
+            _sseTeamServ.SendEventAsync(teamId, new Models.SseModel() { Data = new string[] { "Hello" } } );
+
+            return Ok();
+
+        }
+
+
+
         [HttpGet("createTeam")]
         public async Task CreateTeam() {
             //await HttpContext.SSEInitAsync();//TODO
@@ -59,7 +77,7 @@ namespace API.Controllers {
 
         }
 
-        [HttpPost("JoinTeam")]
+        [HttpGet("JoinTeam")]
         public async Task JoinTeam(Guid teamId) {
 
             //await HttpContext.SSEInitAsync();//TODO

@@ -1,4 +1,5 @@
-﻿using API.Models;
+﻿using API.Controllers;
+using API.Models;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Runtime.Intrinsics.X86;
@@ -33,6 +34,10 @@ namespace API.SSE {
         public void RemoveSseTeam(Guid teamId) {//TODO put private auto when no client connected
             _Teams.TryRemove(teamId, out ServerSentEventsService service);
             //TODO check if I have to remove all client ? close team when nobody in the team so no.
+        }
+
+        public ICollection<Guid> getAllTeams() {
+            return _Teams.Keys;
         }
 
         public Task SendObjectAsync(Guid teamId, Object o) {
