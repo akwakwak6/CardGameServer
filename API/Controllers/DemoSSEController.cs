@@ -35,7 +35,6 @@ namespace API.Controllers {
 
             Console.WriteLine("disconnect " + clientId);
 
-
         }
 
 

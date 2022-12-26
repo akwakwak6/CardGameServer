@@ -31,8 +31,11 @@ namespace API {
                     });
             });
 
+
+            builder.Services.AddScoped<CardGameDbContext>();
             builder.Services.AddScoped<TokenManager>();
             builder.Services.AddScoped<UserService>();//TODO use interface
+            builder.Services.AddScoped<PresiService>();//TODO use interface
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
@@ -60,6 +63,7 @@ namespace API {
                 app.UseSwaggerUI();
             }
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

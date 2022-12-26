@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using BLL.Models;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,16 +13,18 @@ namespace API.Infrastructure {
             _secret = config.GetSection("TokenInfo").GetSection("secret").Value;
         }
 
-        public string GenerateToken(/*User user*/) {//TODO
-            //if (user == null) throw new ArgumentNullException();
+        public string GenerateToken(UserConnectedDalModel user) {//TODO
+            if (user == null) throw new ArgumentNullException();
 
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
 
             Claim[] claims = new Claim[] {
-                /*new Claim(ClaimTypes.Role,user.IsAdmin ? "admin" : "user"),
-                new Claim("email",user.Email),
-                new Claim("UserId",user.Id.ToString())*/
+                new Claim("UserId",user.Id.ToString()),
+                new Claim("Pseudo",user.Pseudo),
+                new Claim(ClaimTypes.Role,"user")
+                //TODO
+                /*new Claim(ClaimTypes.Role,user.IsAdmin ? "admin" : "user")*/
             };
 
             JwtSecurityToken token = new JwtSecurityToken(
