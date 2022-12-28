@@ -12,7 +12,7 @@ namespace DAL.Settings.Presi {
     internal class PresiPlayerSetting : IEntityTypeConfiguration<PresiPlayer> {
 
         public void Configure(EntityTypeBuilder<PresiPlayer> builder) {
-
+            builder.Property(b => b.IsPlaying).HasDefaultValue(true);
         }
 
     }

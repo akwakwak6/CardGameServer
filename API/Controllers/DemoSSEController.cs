@@ -5,8 +5,9 @@ namespace API.Controllers {
     [Route("api/[controller]")]
     [ApiController]
 
+    
     public class DemoSSEController : ControllerBase {
-
+        /*
         private readonly ServerSentEventsService _serverSentEventsService;
         private readonly ServerSentEventsManager _sseTeamServ;
 
@@ -117,7 +118,7 @@ namespace API.Controllers {
                 
 
             return Ok();
-        }
+        }*/
 
     }
 }

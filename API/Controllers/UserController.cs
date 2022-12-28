@@ -30,9 +30,10 @@ namespace CardGameServer.Controllers {
         public IActionResult Login(UserLoginModel u ) {
 
             try {
-                return Ok(getApiUser(_UsrServ.Login(u)));
-            } catch(Exception ex) {//TODO redo catch
-                return BadRequest(ex);
+                UserConnectedDalModel usr = _UsrServ.Login(u);
+                return Ok(getApiUser(usr));
+            } catch(Exception ex) {
+                return BadRequest();
             }
         }
 
@@ -41,8 +42,8 @@ namespace CardGameServer.Controllers {
 
             try {
                 return Ok(getApiUser(_UsrServ.Register(u)));
-            } catch (Exception ex) {//TODO redo catch
-                return BadRequest(ex);
+            } catch (Exception ex) {
+                return BadRequest();
             }
         }
     }

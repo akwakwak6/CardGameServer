@@ -1,9 +1,11 @@
 using API.Infrastructure;
 using API.SSE;
 using BLL.Services;
+using BLL.Services.Presi;
 using DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
 using System.Text;
 
 namespace API {
@@ -23,6 +25,8 @@ namespace API {
 
             builder.Services.AddSingleton<ServerSentEventsService>();
             builder.Services.AddSingleton<ServerSentEventsManager>();
+            builder.Services.AddSingleton<EventService>();
+            builder.Services.AddSingleton<PresiTableManagerBL>();
 
             builder.Services.AddCors(options => {
                 options.AddPolicy(name: MyAllowSpecificOrigins,

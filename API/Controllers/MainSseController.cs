@@ -1,4 +1,7 @@
 ﻿using API.SSE;
+using BLL.Models.PresiModel;
+using BLL.Services;
+using Entities.Presi;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +11,15 @@ namespace API.Controllers {
     public class MainSseController : ControllerBase {
 
         private readonly ServerSentEventsService _SseService;
+        private readonly EventService _EventService;
+        private readonly PresiService _PresiService;
 
-        public MainSseController(ServerSentEventsService sseService) {
+        private ServerSentEventsClient client;
+
+        public MainSseController(ServerSentEventsService sseService , EventService eventSrv, PresiService presiService) {
             _SseService = sseService;
+            _EventService = eventSrv;
+            _PresiService = presiService;
         }
 
         [HttpGet]
@@ -21,17 +30,30 @@ namespace API.Controllers {
             HttpContext.Response.Headers.Add("Content-Type", "text/event-stream");
             await HttpContext.Response.Body.FlushAsync();
 
-            ServerSentEventsClient client = new ServerSentEventsClient(HttpContext.Response);
-            Guid clientId = _SseService.AddClient(client);
+            client = new ServerSentEventsClient(HttpContext.Response);
 
-            Console.WriteLine("connect " + clientId);
+            //Guid clientId = _SseService.AddClient(client);
+
+            //Console.WriteLine("connect " + clientId);
+
+            TableListener(_PresiService.getTableList());
+            _EventService.AddTableListener(TableListener);
+
 
             HttpContext.RequestAborted.WaitHandle.WaitOne();
 
-            _SseService.RemoveClient(clientId);
 
-            Console.WriteLine("disconnect " + clientId);
+            _EventService.RemoveTableListener(TableListener);
 
+            //_SseService.RemoveClient(clientId);
+
+            //Console.WriteLine("disconnect " + clientId);
+
+        }
+
+        private void TableListener(PresiTableList tables) {
+            //_SseService.SendObjectAsync(tables);
+            client.SendEventAsync(_SseService.getSSE(tables));
         }
 
     }

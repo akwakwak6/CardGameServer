@@ -30,12 +30,13 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("PresiTableId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsPlaying")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
-                    b.Property<string>("Pseudo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PresiTableId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -52,7 +53,12 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("UserId")
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -90,7 +96,9 @@ namespace DAL.Migrations
                 {
                     b.HasOne("Entities.Presi.PresiTable", null)
                         .WithMany("Players")
-                        .HasForeignKey("PresiTableId");
+                        .HasForeignKey("PresiTableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Entities.Presi.PresiTable", b =>

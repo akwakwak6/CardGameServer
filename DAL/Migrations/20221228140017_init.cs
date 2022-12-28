@@ -15,7 +15,8 @@ namespace DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -43,7 +44,7 @@ namespace DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Pseudo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsPlaying = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     PresiTableId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

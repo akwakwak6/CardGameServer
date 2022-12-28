@@ -39,14 +39,18 @@ namespace BLL.Services {
 
 
             //TODO hash pwd in DB
-            User u = _DB.Users.Single(b => b.Pseudo == user.pseudo);//TODO add try catch
+
+            User? u = _DB.Users.Where(b => b.Pseudo == user.pseudo).SingleOrDefault();//TODO pseudo is unique
+
+            if( u is null ) throw new Exception("Error login");
 
             string pwd = HashPwd(user.Pwd, u.Salt);
 
             if (pwd == u.Pwd)
                 return u.ToConnectedModel();
 
-            throw new Exception("Error login pwd");
+            throw new Exception("Error pwd");
+
 
         }
 

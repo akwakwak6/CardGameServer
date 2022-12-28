@@ -21,8 +21,8 @@ namespace DAL {
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
 
             new UserSetting().Configure(modelBuilder.Entity<User>());
-            new PresiPlayerSetting().Configure(modelBuilder.Entity<PresiPlayer>());
             new PresiTableSetting().Configure(modelBuilder.Entity<PresiTable>());
+            new PresiPlayerSetting().Configure(modelBuilder.Entity<PresiPlayer>());
 
 
             //TODO add default users (ADMIN)

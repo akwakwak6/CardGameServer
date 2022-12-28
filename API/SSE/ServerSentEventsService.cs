@@ -1,5 +1,6 @@
 ﻿using API.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Collections.Concurrent;
 using System.Runtime.Intrinsics.X86;
 
@@ -25,22 +26,39 @@ namespace API.SSE {
             return _clients.Count;
         }
 
-        public Task SendObjectAsync(Object o) {
+        public SseModel getSSE(Object o) {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            return new SseModel() {
+                Type = o.GetType().Name,
+                Data = new string[] { JsonConvert.SerializeObject(o, serializerSettings) }
+            };
+        }
+
+        public async Task SendObjectAsync(Object o) {
+
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
             SseModel sse = new SseModel() {
                 Type = o.GetType().Name,
-                Data = new string[] { JsonConvert.SerializeObject(o) }
+                Data = new string[] { JsonConvert.SerializeObject(o, serializerSettings) }
             };
 
-            return SendEventAsync(sse);
+            await SendEventAsync(sse);
         }
 
-        public Task SendEventAsync(SseModel sse) {
-            List<Task> clientsTasks = new List<Task>();
+        public async Task SendEventAsync(SseModel sse) {
+            
+
+
+            //List<Task> clientsTasks = new List<Task>();
             foreach (ServerSentEventsClient client in _clients.Values) {
-                clientsTasks.Add(client.SendEventAsync(sse));
+                //clientsTasks.Add(client.SendEventAsync(sse));
+                //await client.SendEventAsync(sse);
             }
-            return Task.WhenAll(clientsTasks);
+            //return Task.WhenAll(clientsTasks);
         }
 
     }

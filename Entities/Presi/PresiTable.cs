@@ -8,8 +8,9 @@ namespace Entities.Presi {
     public class PresiTable {
 
         public int Id { get; set; }
-        public ICollection<PresiPlayer> Players { get; set; } = new List<PresiPlayer>();
-        public int? UserId { get; set; }
+        public ICollection<PresiPlayer> Players { get; set; }
+        public int UserId { get; set; }
+        public Boolean IsActive { get; set; }
 
     }
 }
