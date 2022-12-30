@@ -54,18 +54,18 @@ namespace BLL.Services {
             List<Entities.Presi.PresiTable> tables = _DB.PresiTables.Include(t => t.Players).Where(t => t.IsActive).ToList();
             List<Entities.Presi.PresiTable> tables2 = new List<Entities.Presi.PresiTable>();
 
-            foreach (var table in tables) {
+            foreach (var table in tables) {//TODO remove this foreach
                 List<PresiPlayer> pls = table.Players.Where( p => p.IsPlaying ).ToList();
                 Entities.Presi.PresiTable tp = table;
                 tp.Players = pls;
                 tables2.Add(tp);
             }
 
-            return new PresiTableList() {
+            return new PresiTableList() {//TODO send a array. not a model with just a list
                 Tables = tables2
             };
 
-                //return new PresiTableList() { Tables = _DB.PresiTables.Include(t => t.Players.Where(p => p.IsPlaying)).Where(t => t.IsActive).ToList() };
+            //return new PresiTableList() { Tables = _DB.PresiTables.Include(t => t.Players.Where(p => p.IsPlaying)).Where(t => t.IsActive).ToList() };
         }
 
         public int JoinTable(int tableId,Action<PresiGameModel> cb,int? userId = null) {
@@ -84,8 +84,9 @@ namespace BLL.Services {
             if (userId is null) {
                 plBL.Pseudo = "Visito:" + plDB.Id;
             } else {
-                plBL.Pseudo = _DB.Users.Find(userId).Pseudo;
+                plBL.Pseudo = _DB.Users.Find(userId).Pseudo;//TODO if bad userId do ... ?
             }
+            plBL.Id = plDB.Id;
 
             _TableMgnSrv.AddPlayer(tableId, plBL, cb);
 
@@ -96,6 +97,8 @@ namespace BLL.Services {
 
         public void LeftTable(int tableId,int playerId) {//TODO no need table ID / left to leave
 
+
+            _TableMgnSrv.RemovePlayer(tableId, playerId);
             Console.WriteLine("left table " + tableId + " player id :" + playerId);
             PresiPlayer? player = _DB.PresiPlayers.Find(playerId);
 
@@ -114,6 +117,14 @@ namespace BLL.Services {
             _DB.SaveChanges();
             SendTableList();
 
+        }
+
+        public void SetReady(int tableId, int playerId) {
+            _TableMgnSrv.Ready(tableId, playerId);
+        }
+
+        public void SetCards(int tableId, int playerId, IEnumerable<int> cards) {
+            _TableMgnSrv.SetCards(tableId, playerId, cards);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BLL.Models.PresiModel;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,29 @@ namespace BLL.Services.Presi {
         }
 
         public void AddPlayer(int tableId, PresiPlayerGameModel player, Action<PresiGameModel> cb) {
-            _Tables.TryGetValue(tableId, out PresiTableBL t);
+            GetTable(tableId).AddPlayer(player, cb);
+        }
+
+        public void RemovePlayer(int tableId,int playerID) {
+            GetTable(tableId).RemovePlayer(playerID);
+        }
+
+        public void Ready(int tableId, int playerId) {
+            GetTable(tableId).Ready(playerId);
+        }
+
+        public void SetCards(int tableId, int playerId, IEnumerable<int> cards) {
+            GetTable(tableId).SetCards(playerId, cards);
+        }
+
+
+        private PresiTableBL GetTable(int tableId) {
+
+            _Tables.TryGetValue(tableId, out PresiTableBL? t);
             if (t == null) {
                 throw new Exception();
             }
-            t.AddPlayer(player, cb);
+            return t;
         }
 
     }

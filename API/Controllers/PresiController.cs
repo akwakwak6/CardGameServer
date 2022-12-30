@@ -62,7 +62,6 @@ namespace API.Controllers {
             int? userId = null;
 
             if (token != "null") {
-
                 userId = int.Parse(_TokonSrv.ReadToken(token, "UserId"));
             }
 
@@ -75,12 +74,29 @@ namespace API.Controllers {
             //Guid playerGuid = _sseTeamServ.AddCientToTeam(tableId, client);//TODO create teams if no teams 
 
             int playerId = _PresiSrv.JoinTable(tableId,SendDataTable,userId);
+
+            client.SendEventAsync(new Models.SseModel() { Type = "playerID", Data = new List<string>() { "{\"playerId\":" + playerId + " } " } } );
+
             Console.WriteLine("joined table "+ tableId + " player id :" + playerId);
             HttpContext.RequestAborted.WaitHandle.WaitOne();
 
             _PresiSrv.LeftTable(tableId, playerId);
             //await LeaveTable(tableId, playerGuid, playerId);
 
+        }
+
+        [HttpGet("ready")]
+        public IActionResult SetReady(int tableId,int playerId) {
+            //TODO useToken
+            _PresiSrv.SetReady(tableId, playerId);
+            return Ok();
+        }
+
+        [HttpPost("setCards")]
+        public IActionResult setCards(int tableId, int playerId, IEnumerable<int> cards) {
+            //TODO useToken
+            _PresiSrv.SetCards( tableId, playerId, cards);
+            return Ok();
         }
 
         private void SendDataTable(PresiGameModel data) {
