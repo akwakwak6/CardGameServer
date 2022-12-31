@@ -15,6 +15,7 @@ namespace BLL.Services.Presi {
 
         private GameState _GS = GameState.INIT;
         private List<PlayerInGame> _Players = new List<PlayerInGame>();
+        private List<int> _CenterCarte = new List<int>();
 
         public void AddPlayer(PresiPlayerGameModel player, Action<PresiGameModel> cb) {
 
@@ -55,15 +56,46 @@ namespace BLL.Services.Presi {
 
         public void SetCards(int playerId, IEnumerable<int> cards) {
             Console.WriteLine("set cards "+playerId+" " + cards.Count()+ " first "+cards.First());
+
+            if ( !_Players.Where(p => p.Player.Id == playerId).First().Player.IsPlaying ) return;
+
+            int? i = null;
+            int cpt = 0;
+
+            _Players.ForEach( p => {  
+            
+                if(p.Player.Id  == playerId) {
+                    
+                    p.Player.IsPlaying = false;
+                    i = cpt;
+                    p.Cards.RemoveAll(c => cards.Contains(c));
+                    //p.Cards.Remove(cards);
+                }
+                cpt++;
+                
+            });
+
+            _CenterCarte = cards.ToList();
+
+            if (i is not null) {
+                _Players[(int)(++i) % _Players.Count].Player.IsPlaying = true;
+            }
+
+            UpdateDataTable();
+
+
         }
 
 
         private void UpdateDataTable() {
 
             PresiGameModel pgm = new PresiGameModel() { 
-                CenterCarte = new List<int>(),
+                CenterCarte = _CenterCarte,
                 //ShowReady = false
             };
+            _Players.ForEach(p => {
+                p.Player.NbCard = p.Cards.Count;
+            });
 
             if (_GS == GameState.INIT) {
                 foreach (PlayerInGame pig in _Players) {
@@ -103,6 +135,7 @@ namespace BLL.Services.Presi {
 
         private void StartGame() {
             _GS = GameState.WAITREADY;
+            _CenterCarte = new List<int>();
             _Players.ForEach(p => {
                 p.Player.IsPlaying = true;
                 p.Cards.Clear();
@@ -112,7 +145,7 @@ namespace BLL.Services.Presi {
 
         private void DealCards() {
             _GS = GameState.PLAY;
-            List<int> cards = Enumerable.Range(0, 51).ToList();
+            List<int> cards = Enumerable.Range(0, 54).ToList();
             Random rand = new Random();
             cards = cards.OrderBy( _ => rand.Next()).ToList();
 
@@ -121,13 +154,13 @@ namespace BLL.Services.Presi {
                 _Players[ o.i % _Players.Count ].Cards.Add(o.c);
 
             }
-            _Players.ForEach(p => { 
-                p.Player.NbCard = p.Cards.Count;
-            });
 
             _Players.ForEach(p => {
                 p.Cards.Sort( (c1,c2) => CompareCard(c1,c2) );
             });
+
+            _Players.ForEach(p => { if (p.Cards.Contains(1)) p.Player.IsPlaying = true; });
+
         }
 
         private int CompareCard(int a,int b) {
