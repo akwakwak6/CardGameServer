@@ -36,7 +36,7 @@ namespace API {
             });
 
 
-            builder.Services.AddScoped<CardGameDbContext>();
+            builder.Services.AddTransient<CardGameDbContext>();//TODO test transient
             builder.Services.AddScoped<TokenManager>();
             builder.Services.AddScoped<UserService>();//TODO use interface
             builder.Services.AddScoped<PresiService>();//TODO use interface

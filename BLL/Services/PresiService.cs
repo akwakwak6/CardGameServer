@@ -51,7 +51,7 @@ namespace BLL.Services {
         public PresiTableList getTableList() {
             //TODO understand why, when put player IsPlaying false, get this player in the playerList the first time of the call ? ? ? 
 
-            List<Entities.Presi.PresiTable> tables = _DB.PresiTables.Include(t => t.Players).Where(t => t.IsActive).ToList();
+            /*List<Entities.Presi.PresiTable> tables = _DB.PresiTables.Include(t => t.Players).Where(t => t.IsActive).ToList();
             List<Entities.Presi.PresiTable> tables2 = new List<Entities.Presi.PresiTable>();
 
             foreach (var table in tables) {//TODO remove this foreach
@@ -63,9 +63,12 @@ namespace BLL.Services {
 
             return new PresiTableList() {//TODO send a array. not a model with just a list
                 Tables = tables2
-            };
+            };*/
 
-            //return new PresiTableList() { Tables = _DB.PresiTables.Include(t => t.Players.Where(p => p.IsPlaying)).Where(t => t.IsActive).ToList() };
+            CardGameDbContext cxt = new CardGameDbContext();
+
+
+            return new PresiTableList() { Tables = cxt.PresiTables.Include(t => t.Players.Where(p => p.IsPlaying)).Where(t => t.IsActive).ToList() };
         }
 
         public int JoinTable(int tableId,Action<PresiGameModel> cb,int? userId = null) {
@@ -97,8 +100,28 @@ namespace BLL.Services {
 
         public void LeftTable(int tableId,int playerId) {//TODO no need table ID / left to leave
 
+            PresiTable? t = _DB.PresiTables.Include(t => t.Players.Where(p => p.IsPlaying)).Where(t => t.Id == tableId).FirstOrDefault();
 
-            _TableMgnSrv.RemovePlayer(tableId, playerId);
+            if (t is null) return;
+            
+
+            PresiPlayer? p = t.Players.Where(t => t.Id == playerId).FirstOrDefault();
+            if (p is null) return;
+            p.IsPlaying = false;
+
+            Console.WriteLine(t.Players.Count);
+            if (t.Players.Count == 1)
+                t.IsActive = false;
+
+            _DB.SaveChanges();
+            SendTableList();
+
+
+
+
+            /*-----------------------*/
+
+            /*_TableMgnSrv.RemovePlayer(tableId, playerId);
             Console.WriteLine("left table " + tableId + " player id :" + playerId);
             PresiPlayer? player = _DB.PresiPlayers.Find(playerId);
 
@@ -110,12 +133,12 @@ namespace BLL.Services {
 
             if (table is null) return;
 
-            if (table.Players.Count == 1) {
+            if (table.Players.Count == 0) {
                 Console.WriteLine("no player on table "+ tableId);
                 table.IsActive = false;
             }
             _DB.SaveChanges();
-            SendTableList();
+            SendTableList();*/
 
         }
 
