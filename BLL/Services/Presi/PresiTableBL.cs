@@ -1,5 +1,6 @@
 ﻿using BLL.Models.PresiModel;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace BLL.Services.Presi {
 
@@ -65,8 +66,6 @@ namespace BLL.Services.Presi {
             _Players.ForEach( p => {  
             
                 if(p.Player.Id  == playerId) {
-                    
-                    p.Player.IsPlaying = false;
                     i = cpt;
                     p.Cards.RemoveAll(c => cards.Contains(c));
                     //p.Cards.Remove(cards);
@@ -77,8 +76,14 @@ namespace BLL.Services.Presi {
 
             _CenterCarte = cards.ToList();
 
-            if (i is not null) {
-                _Players[(int)(++i) % _Players.Count].Player.IsPlaying = true;
+            if (cards.First() % 13 != 0) { //if cards is not a 2
+
+                if (i is not null) {
+                    if (cards.First() % 13 != 0) { //if cards is not a 2
+                        _Players[(int)i].Player.IsPlaying = false;
+                        _Players[(int)(++i) % _Players.Count].Player.IsPlaying = true;
+                    }
+                }
             }
 
             UpdateDataTable();
@@ -100,7 +105,9 @@ namespace BLL.Services.Presi {
             if (_GS == GameState.INIT) {
                 foreach (PlayerInGame pig in _Players) {
                     pgm.Players = _Players.Where(p => p.Player.Id != pig.Player.Id).Select(p => p.Player).ToList();
-                    pgm.Me = _Players.Single(p => p.Player.Id == pig.Player.Id).Player; 
+                    pgm.Me = _Players.Single(p => p.Player.Id == pig.Player.Id).Player;
+                    pgm.MyHand = new List<int>();
+
                     pig.CallBack(pgm);
                 }
                 return;
@@ -111,6 +118,8 @@ namespace BLL.Services.Presi {
                     pgm.Players = _Players.Where(p => p.Player.Id != pig.Player.Id).Select(p => p.Player).ToList();
                     pgm.Me = _Players.Single(p => p.Player.Id == pig.Player.Id).Player;
                     pgm.ShowReady = pig.Player.IsPlaying;
+                    pgm.MyHand = new List<int>();
+
                     pig.CallBack(pgm);
                 }
                 return;
@@ -120,7 +129,7 @@ namespace BLL.Services.Presi {
                 foreach (PlayerInGame pig in _Players) {
                     pgm.Players = _Players.Where(p => p.Player.Id != pig.Player.Id).Select(p => p.Player).ToList();
                     pgm.Me = _Players.Single(p => p.Player.Id == pig.Player.Id).Player;
-                    pgm.ShowReady = pig.Player.IsPlaying;
+                    pgm.ShowReady = false;
                     pgm.MyHand = pig.Cards;
 
                     pig.CallBack(pgm);
@@ -145,7 +154,7 @@ namespace BLL.Services.Presi {
 
         private void DealCards() {
             _GS = GameState.PLAY;
-            List<int> cards = Enumerable.Range(0, 54).ToList();
+            List<int> cards = Enumerable.Range(0, 52).ToList();
             Random rand = new Random();
             cards = cards.OrderBy( _ => rand.Next()).ToList();
 

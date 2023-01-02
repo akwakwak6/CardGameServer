@@ -75,7 +75,7 @@ namespace API.Controllers {
 
             int playerId = _PresiSrv.JoinTable(tableId,SendDataTable,userId);
 
-            client.SendEventAsync(new Models.SseModel() { Type = "playerID", Data = new List<string>() { "{\"playerId\":" + playerId + " } " } } );
+            //client.SendEventAsync(new Models.SseModel() { Type = "playerID", Data = new List<string>() { "{\"playerId\":" + playerId + " } " } } );
 
             Console.WriteLine("joined table "+ tableId + " player id :" + playerId);
             HttpContext.RequestAborted.WaitHandle.WaitOne();
