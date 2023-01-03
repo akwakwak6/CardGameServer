@@ -4,6 +4,7 @@ using DAL;
 using Entities;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace BLL.Services {
     public class UserService {
@@ -14,7 +15,7 @@ namespace BLL.Services {
         }
 
         private string HashPwd(string password,out byte[] salt) {
-            
+
             salt = RandomNumberGenerator.GetBytes(128 / 8);
 
             return Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -63,8 +64,6 @@ namespace BLL.Services {
                 Pseudo = user.pseudo,
                 Salt= salt,
             };
-
-            Console.WriteLine(userDB);
 
             _DB.Add(userDB);
 

@@ -146,7 +146,7 @@ namespace BLL.Services {
             _TableMgnSrv.Ready(tableId, playerId);
         }
 
-        public void SetCards(int tableId, int playerId, IEnumerable<int> cards) {
+        public void SetCards(int tableId, int playerId, List<int> cards) {
             _TableMgnSrv.SetCards(tableId, playerId, cards);
         }
     }

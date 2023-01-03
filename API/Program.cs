@@ -65,6 +65,9 @@ namespace API {
             if (app.Environment.IsDevelopment()) {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                //clean DB
+                InitDB.CleanDB();
             }
 
             app.UseAuthentication();
@@ -74,6 +77,8 @@ namespace API {
             app.MapControllers();
 
             app.Run();
+
+
         }
     }
 }

@@ -27,7 +27,7 @@ namespace BLL.Services.Presi {
             GetTable(tableId).Ready(playerId);
         }
 
-        public void SetCards(int tableId, int playerId, IEnumerable<int> cards) {
+        public void SetCards(int tableId, int playerId, List<int> cards) {
             GetTable(tableId).SetCards(playerId, cards);
         }
 

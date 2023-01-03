@@ -93,7 +93,7 @@ namespace API.Controllers {
         }
 
         [HttpPost("setCards")]
-        public IActionResult setCards(int tableId, int playerId, IEnumerable<int> cards) {
+        public IActionResult setCards(int tableId, int playerId, List<int> cards) {
             //TODO useToken
             _PresiSrv.SetCards( tableId, playerId, cards);
             return Ok();
