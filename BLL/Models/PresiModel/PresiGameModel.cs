@@ -7,5 +7,7 @@ namespace BLL.Models.PresiModel {
         public List<int> MyHand { get; set; }
         public Boolean ShowReady { get; set; }
         public PresiPlayerGameModel Me { get; set; }
+        public List<int> ChangeCards { get; set; }
+        public List<int> NewCards { get; set; }
     }
 }

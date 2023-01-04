@@ -65,10 +65,12 @@ namespace BLL.Services {
                 Tables = tables2
             };*/
 
-            CardGameDbContext cxt = new CardGameDbContext();
+            using (CardGameDbContext cxt = new CardGameDbContext()) {
+                return new PresiTableList() { Tables = cxt.PresiTables.Include(t => t.Players.Where(p => p.IsPlaying)).Where(t => t.IsActive).ToList() };
+            }
 
 
-            return new PresiTableList() { Tables = cxt.PresiTables.Include(t => t.Players.Where(p => p.IsPlaying)).Where(t => t.IsActive).ToList() };
+                
         }
 
         public int JoinTable(int tableId,Action<PresiGameModel> cb,int? userId = null) {
@@ -108,6 +110,8 @@ namespace BLL.Services {
             PresiPlayer? p = t.Players.Where(t => t.Id == playerId).FirstOrDefault();
             if (p is null) return;
             p.IsPlaying = false;
+
+            _TableMgnSrv.RemovePlayer(tableId, playerId);
 
             Console.WriteLine(t.Players.Count);
             if (t.Players.Count == 1)

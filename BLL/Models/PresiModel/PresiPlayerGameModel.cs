@@ -16,5 +16,6 @@ namespace BLL.Models.PresiModel {
         public PresiRoles Role { get; set; }
         public bool Passed { get; set; }
         public Boolean IsPlaying { get; set; }
+
     }
 }
