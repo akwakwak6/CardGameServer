@@ -45,7 +45,7 @@ namespace BLL.Services {
         }
 
         private void SendTableList() {
-            _EventSrv.tableEvent?.Invoke(getTableList());
+            tableEvent?.Invoke(getTableList());
         }
 
         public PresiTableList getTableList() {
