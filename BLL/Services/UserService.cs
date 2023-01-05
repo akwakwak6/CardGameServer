@@ -38,10 +38,7 @@ namespace BLL.Services {
 
         public UserConnectedDalModel Login(UserLoginModel user) {
 
-
-            //TODO hash pwd in DB
-
-            User? u = _DB.Users.Where(b => b.Pseudo == user.pseudo).SingleOrDefault();//TODO pseudo is unique
+            User? u = _DB.Users.Where(b => b.Pseudo == user.pseudo).SingleOrDefault();//TODO pseudo has to be unique
 
             if( u is null ) throw new Exception("Error login");
 

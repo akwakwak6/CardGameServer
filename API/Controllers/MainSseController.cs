@@ -10,14 +10,14 @@ namespace API.Controllers {
     [ApiController]
     public class MainSseController : ControllerBase {
 
-        private readonly EventService _EventService;
         private readonly PresiService _PresiService;
+        private readonly EventService _EventSrv;
 
         private ServerSentEventsClient client;
 
-        public MainSseController(EventService eventSrv, PresiService presiService) {
-            _EventService = eventSrv;
+        public MainSseController(PresiService presiService, EventService eventSrv) {
             _PresiService = presiService;
+            _EventSrv = eventSrv;
         }
 
         [HttpGet]
@@ -26,11 +26,11 @@ namespace API.Controllers {
             client = await this.InitAndGetSseClient();
 
             TableListener(_PresiService.getTableList());
-            _EventService.AddTableListener(TableListener);
+            _EventSrv.AddTableListener(TableListener);
 
             HttpContext.RequestAborted.WaitHandle.WaitOne();
 
-            _EventService.RemoveTableListener(TableListener);
+            _EventSrv.RemoveTableListener(TableListener);
 
         }
 

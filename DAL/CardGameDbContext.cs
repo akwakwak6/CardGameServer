@@ -1,10 +1,10 @@
 ﻿
 
 using DAL.Settings;
-using DAL.Settings.Presi;
-using Entities;
-using Entities.Presi;
 using Microsoft.EntityFrameworkCore;
+using DAL.Settings.Presi;
+using Entities.Presi;
+using Entities;
 
 namespace DAL {
     public class CardGameDbContext : DbContext {
@@ -23,11 +23,6 @@ namespace DAL {
             new UserSetting().Configure(modelBuilder.Entity<User>());
             new PresiTableSetting().Configure(modelBuilder.Entity<PresiTable>());
             new PresiPlayerSetting().Configure(modelBuilder.Entity<PresiPlayer>());
-
-
-            //TODO add default users (ADMIN)
-            //modelBuilder.Entity<User>().HasData(new User { Id = 1, Pseudo = "ADMIN", Pwd = "ADMIN" });
-            //modelBuilder.Entity<User>().HasData(new User { Id = 2, Pseudo = "USER", Pwd = "USER" });
 
         }
 

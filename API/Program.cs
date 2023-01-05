@@ -23,9 +23,8 @@ namespace API {
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-
-            builder.Services.AddSingleton<EventService>();
             builder.Services.AddSingleton<PresiTableManagerBL>();
+            builder.Services.AddSingleton<EventService>();
 
             builder.Services.AddCors(options => {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -35,10 +34,10 @@ namespace API {
             });
 
 
-            builder.Services.AddTransient<CardGameDbContext>();//TODO test transient
+            builder.Services.AddScoped<CardGameDbContext>();
             builder.Services.AddScoped<TokenManager>();
-            builder.Services.AddScoped<UserService>();//TODO use interface
-            builder.Services.AddScoped<PresiService>();//TODO use interface
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<PresiService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {

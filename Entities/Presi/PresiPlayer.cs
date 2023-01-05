@@ -4,7 +4,6 @@ namespace Entities.Presi {
 
         public int Id { get; set; }
         public Boolean IsPlaying { get; set; }
-        
         public int PresiTableId { get; set; }
     }
 }

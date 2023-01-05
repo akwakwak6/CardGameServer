@@ -29,7 +29,7 @@ namespace API.Infrastructure {
             return jwtSecurityToken.Claims.First(claim => claim.Type == claimName).Value;
         }
 
-        public string GenerateToken(UserConnectedDalModel user) {//TODO
+        public string GenerateToken(UserConnectedDalModel user) {
             if (user == null) throw new ArgumentNullException();
 
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
@@ -39,8 +39,6 @@ namespace API.Infrastructure {
                 new Claim("UserId",user.Id.ToString()),
                 new Claim("Pseudo",user.Pseudo),
                 new Claim(ClaimTypes.Role,"user")
-                //TODO
-                /*new Claim(ClaimTypes.Role,user.IsAdmin ? "admin" : "user")*/
             };
 
             JwtSecurityToken token = new JwtSecurityToken(

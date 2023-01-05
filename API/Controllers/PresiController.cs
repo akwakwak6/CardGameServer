@@ -1,13 +1,10 @@
-﻿using API.Infrastructure;
-using API.SSE;
-using BLL.Models;
-using BLL.Models.PresiModel;
-using BLL.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Security.Principal;
+using BLL.Models.PresiModel;
+using API.Infrastructure;
+using BLL.Services;
+using API.SSE;
 
 namespace API.Controllers {
     [Route("api/[controller]")]
@@ -38,7 +35,7 @@ namespace API.Controllers {
                 _PresiSrv.CreateTable(USerId, psd, out int tableId);
                 return Ok();
 
-            } catch (Exception ex) {//TODO redo catch
+            } catch (Exception ex) {
                 return BadRequest();
             }
         }
@@ -58,7 +55,7 @@ namespace API.Controllers {
 
             HttpContext.RequestAborted.WaitHandle.WaitOne();
 
-            _PresiSrv.LeftTable(tableId, playerId);
+            _PresiSrv.LeaveTable(tableId, playerId);
 
         }
 

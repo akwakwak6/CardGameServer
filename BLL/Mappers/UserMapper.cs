@@ -2,7 +2,6 @@
 
 using BLL.Models;
 using Entities;
-using System.Runtime.CompilerServices;
 
 namespace BLL.Mappers {
     public static class UserMapper {

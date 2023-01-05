@@ -6,7 +6,7 @@ namespace BLL.Services.Presi {
 
     internal class PresiTableBL {
 
-        enum GameState : ushort {
+        private enum GameState : ushort {
             INIT,
             WAITREADY,
             EXCHANGE,
@@ -23,12 +23,16 @@ namespace BLL.Services.Presi {
 
         public void AddPlayer(PresiPlayerGameModel player, Action<PresiGameModel> cb) {
 
-            Console.WriteLine("add player "+player);
-            _Players.Add( new PlayerInGame(player,cb) );
+            _Players.Add(new PlayerInGame(player, cb));
 
             if (_GS == GameState.INIT) {
                 if (_Players.Count >= NB_PLAYER_MIN)
                     StartGame();
+            }
+
+
+            if( _GS == GameState.WAITREADY) {
+                _Players.Last().Player.IsPlaying = true;
             }
 
             UpdateDataTable();
@@ -38,7 +42,32 @@ namespace BLL.Services.Presi {
 
 
         public void RemovePlayer(int playerID) {
-            _Players.RemoveAll(p => p.Player.Id == playerID);
+
+            int plI = _Players.FindIndex(p => p.Player.Id == playerID);
+
+            if (plI == -1) return;
+
+            if( _GS == GameState.PLAY || _GS == GameState.SHOWNEWCARD) {
+                if (_Players[plI].Player.IsPlaying){
+                    FindNextPlayer(plI);
+                }
+            }
+
+            if (_GS == GameState.EXCHANGE ) {
+                if(_Players[plI].Player.Role != PresiRoles.Neutre) {
+                    if( _Players.Count > 3) {
+                        _Players.RemoveAt(plI);
+                        GiveRoleFctPosition();
+                        SetPlayingFctRole();
+                        UpdateDataTable();
+                        return;
+                    } else {
+                        _GS = GameState.INIT;
+                    }
+                }
+            }
+
+            _Players.RemoveAt(plI);
             UpdateDataTable();
         }
 
@@ -50,12 +79,10 @@ namespace BLL.Services.Presi {
             });
 
             if ( _Players.All(p => !p.Player.IsPlaying)) {
-                Console.WriteLine("OK deals cards");
                 DealCards();
             }  
 
             UpdateDataTable();
-            Console.WriteLine( "Ready "+playerId );
         }
 
         private void ExchangeCard() {
@@ -99,6 +126,7 @@ namespace BLL.Services.Presi {
             //TODO check can play cards ?
 
             if (_GS == GameState.PLAY) {
+
                 if (cards.Count == 0) {//if player pass
                     _Players[index].Player.Passed = true;
                     FindNextPlayer(index);
@@ -108,11 +136,10 @@ namespace BLL.Services.Presi {
                     if (_Players[index].Cards.Count == 0) {//player finish
                         PlayerFinish(index);
                     } else {
-                        if (cards.First() % 13 != 0) {//cards played is not 2
-                            FindNextPlayer(index);
-                        } else {
-                            //TODO keep or remove ?
+                        if (cards.First() % 13 == 0) {//cards played is 2
                             _Players.ForEach(p => p.Player.Passed = false);
+                        } else {
+                            FindNextPlayer(index);
                         }
                     }
                 }
@@ -129,6 +156,7 @@ namespace BLL.Services.Presi {
                 if (_Players.All(p => !p.Player.IsPlaying)) {
                     _GS = GameState.SHOWNEWCARD;
                     ExchangeCard();
+                    SetFirtPlayer();
                 }
             }
 
@@ -147,9 +175,9 @@ namespace BLL.Services.Presi {
             for(int i = 1; i < _Players.Count; i++) {
                 if( !_Players[ (index + i) % _Players.Count ].Player.Passed && _Players[(index + i) % _Players.Count].Cards.Count != 0) {
                     _Players[(index + i) % _Players.Count].Player.IsPlaying = true;
-                    if (_Players.Where(p => !p.Player.Passed && p.Position is null).Count()  == 1) {
-                        //if he is the only one who didn't pass, clean center
-                        _CenterCarte = new List<int>();
+                    if (_Players.Where(p => !p.Player.Passed && p.Cards.Count != 0).Count()  == 1) {
+                        //if he is the only one who have card and didn't pass, clean center
+                        _CenterCarte.Clear();
                         _Players.ForEach(p => p.Player.Passed = false);
                     }
                     return;
@@ -158,13 +186,10 @@ namespace BLL.Services.Presi {
         }
 
         private void PlayerFinish(int index) {
-            Console.WriteLine($" player {_Players[index].Player.Id} finish");
             _Players[index].Position = _Position;
             _Position++;
             if (IsFinish()) {
-                Console.WriteLine("game finish");
                 _Players.FindLast(p => p.Cards.Count != 0).Position = _Position;
-                //TODO may be he left
                 GiveRoleFctPosition();
                 waitAndStartNewGame();
             } else {
@@ -236,7 +261,6 @@ namespace BLL.Services.Presi {
                 CenterCarte = _CenterCarte,
                 ChangeCards = new List<int>(),
                 NewCards = new List<int>()
-                //ShowReady = false
             };
             _Players.ForEach(p => {
                 p.Player.NbCard = p.Cards.Count;
@@ -247,6 +271,7 @@ namespace BLL.Services.Presi {
                     pgm.Players = _Players.Where(p => p.Player.Id != pig.Player.Id).Select(p => p.Player).ToList();
                     pgm.Me = _Players.Single(p => p.Player.Id == pig.Player.Id).Player;
                     pgm.MyHand = new List<int>();
+
                     pig.CallBack(pgm);
                 }
                 return;
@@ -269,21 +294,24 @@ namespace BLL.Services.Presi {
                     pgm.Players = _Players.Where(p => p.Player.Id != pig.Player.Id).Select(p => p.Player).ToList();
                     pgm.Me = _Players.Single(p => p.Player.Id == pig.Player.Id).Player;
                     pgm.ShowReady = false;
-                    pgm.MyHand = pig.Cards;
                     pgm.ChangeCards = pig.Exhange;
+                    pgm.MyHand = pig.Cards;
+
                     pig.CallBack(pgm);
                 }
                 return;
             }
 
             if (_GS == GameState.SHOWNEWCARD) {
-                SetFirtPlayer();
+                //wait before set position to null cause player can leave in exchange => regive role
+                _Players.ForEach(p => p.Position = null);
                 foreach (PlayerInGame pig in _Players) {
                     pgm.NewCards = pig.NewCards;
                     pgm.Players = _Players.Where(p => p.Player.Id != pig.Player.Id).Select(p => p.Player).ToList();
                     pgm.Me = _Players.Single(p => p.Player.Id == pig.Player.Id).Player;
                     pgm.ShowReady = false;
                     pgm.MyHand = pig.Cards;
+
                     pig.CallBack(pgm);
                 }
                 _GS = GameState.PLAY;
@@ -323,7 +351,7 @@ namespace BLL.Services.Presi {
 
         private void DealCards() {
             
-            List<int> cards = Enumerable.Range(0, 52).ToList();//TODO put 52 | if more than X players add decks
+            List<int> cards = Enumerable.Range(0, 10).ToList();//TODO put 52 | if more than X players add decks
             Random rand = new Random();
             cards = cards.OrderBy( _ => rand.Next()).ToList();
 
@@ -345,7 +373,8 @@ namespace BLL.Services.Presi {
             } else {
                 _GS = GameState.EXCHANGE;
                 GiveRoleFctPosition();
-                _Players.ForEach(p => p.Position = null);
+                //Wait to start play cause player can leave in exchange => re give role
+                //_Players.ForEach(p => p.Position = null);
                 SetPlayingFctRole();
             }
             

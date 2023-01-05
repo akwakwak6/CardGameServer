@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 namespace BLL.Services.Presi {
     public class PresiTableManagerBL {
 
+        /*
+         Singleton service to manage presi tables
+         */
+
         private Dictionary<int,PresiTableBL> _Tables = new Dictionary<int,PresiTableBL>();
 
         public void CreateTable(int id) {
