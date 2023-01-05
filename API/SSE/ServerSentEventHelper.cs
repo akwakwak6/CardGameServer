@@ -1,7 +1,15 @@
 ﻿using API.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.SSE {
     internal static class ServerSentEventHelper {
+
+        internal static async Task<ServerSentEventsClient> InitAndGetSseClient(this ControllerBase ctrl) {
+            ctrl.HttpContext.Response.Headers.Add("Cache-Control", "no-cache");
+            ctrl.HttpContext.Response.Headers.Add("Content-Type", "text/event-stream");
+            await ctrl.HttpContext.Response.Body.FlushAsync();
+            return new ServerSentEventsClient(ctrl.HttpContext.Response);
+        }
 
         internal static async Task WriteSseEventAsync(this HttpResponse response, SseModel sse) {
             if (!String.IsNullOrWhiteSpace(sse.Id))
@@ -15,7 +23,7 @@ namespace API.SSE {
                     await response.WriteSseEventFieldAsync("data", data);
             }
 
-            await response.WriteSseEventBoundaryAsync();
+            await response.WriteAsync("\n");
             await response.Body.FlushAsync();
         }
 
@@ -23,8 +31,5 @@ namespace API.SSE {
             return response.WriteAsync($"{field}: {data}\n");
         }
 
-        private static Task WriteSseEventBoundaryAsync(this HttpResponse response) {
-            return response.WriteAsync("\n");
-        }
     }
 }

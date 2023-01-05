@@ -1,9 +1,4 @@
 ﻿using BLL.Models.PresiModel;
-using System.Collections;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using System.Numerics;
-using System.Threading;
 
 namespace BLL.Services.Presi {
 

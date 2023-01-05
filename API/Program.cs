@@ -23,8 +23,7 @@ namespace API {
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddSingleton<ServerSentEventsService>();
-            builder.Services.AddSingleton<ServerSentEventsManager>();
+
             builder.Services.AddSingleton<EventService>();
             builder.Services.AddSingleton<PresiTableManagerBL>();
 
