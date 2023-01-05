@@ -44,30 +44,31 @@ namespace BLL.Services.Presi {
         public void RemovePlayer(int playerID) {
 
             int plI = _Players.FindIndex(p => p.Player.Id == playerID);
-
             if (plI == -1) return;
 
-            if( _GS == GameState.PLAY || _GS == GameState.SHOWNEWCARD) {
-                if (_Players[plI].Player.IsPlaying){
-                    FindNextPlayer(plI);
+            PlayerInGame delPl = _Players[plI];
+            _Players.RemoveAt(plI);
+
+            if ( _GS == GameState.PLAY || _GS == GameState.SHOWNEWCARD) {
+                if (delPl.Player.IsPlaying){
+                    FindNextPlayer( (++plI) % _Players.Count);
                 }
             }
 
+            
+
             if (_GS == GameState.EXCHANGE ) {
-                if(_Players[plI].Player.Role != PresiRoles.Neutre) {
-                    if( _Players.Count > 3) {
-                        _Players.RemoveAt(plI);
+                if(delPl.Player.Role != PresiRoles.Neutre) {
+                    if( _Players.Count >= 2) {
                         GiveRoleFctPosition();
                         SetPlayingFctRole();
-                        UpdateDataTable();
-                        return;
                     } else {
                         _GS = GameState.INIT;
                     }
                 }
             }
 
-            _Players.RemoveAt(plI);
+            
             UpdateDataTable();
         }
 
@@ -146,6 +147,7 @@ namespace BLL.Services.Presi {
             }
 
             if (_GS == GameState.EXCHANGE) {
+                if (cards.Count == 0) return;
                 _Players[index].Cards.Remove(cards.First());
                 _Players[index].Exhange.Remove(cards.First());
                 _Players[index].ExhangeSelected.Add(cards.First());
