@@ -1,11 +1,8 @@
-﻿using BLL.Models;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Security.Claims;
 using System.Text;
+using BLL.Models;
 
 namespace API.Infrastructure {
     public class TokenManager {
@@ -13,20 +10,31 @@ namespace API.Infrastructure {
         private readonly string _secret;
 
         public TokenManager(IConfiguration config) {
-            _secret = config.GetSection("TokenInfo").GetSection("secret").Value;
+            _secret = config.GetSection("TokenInfo").GetSection("secret").Value ?? "P@ssw0rd";
         }
 
-        public string ReadToken(string token, string claimName) {
-            //TODO check token
-            /*var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
-            var jsonToken = handler.ReadToken(token);
-            var tokenS = jsonToken as JwtSecurityToken;*/
+        public JwtSecurityToken? ReadToken(string token) {
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_secret);
 
-            var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
+            try {
+                handler.ValidateToken(token, new TokenValidationParameters {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                }, out SecurityToken t);
+                return t as JwtSecurityToken;
+            } catch(Exception ex) {
+                return null;
+            }     
 
-            return jwtSecurityToken.Claims.First(claim => claim.Type == claimName).Value;
+        }
+
+        public int? GetUserId(string token) {
+            if (int.TryParse(ReadToken(token)?.Claims.First(c => c.Type == "UserId").Value, out int o))
+                return o;
+            return null;
         }
 
         public string GenerateToken(UserConnectedDalModel user) {

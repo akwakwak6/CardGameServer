@@ -5,6 +5,7 @@ using BLL.Models.PresiModel;
 using API.Infrastructure;
 using BLL.Services;
 using API.SSE;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace API.Controllers {
     [Route("api/[controller]")]
@@ -45,8 +46,8 @@ namespace API.Controllers {
 
             int? userId = null;
 
-            if (token != "null") {
-                userId = int.Parse(_TokonSrv.ReadToken(token, "UserId"));
+            if (token != "null") {//TODO can do optional para ?
+                userId = _TokonSrv.GetUserId(token);
             }
 
             client = await this.InitAndGetSseClient();

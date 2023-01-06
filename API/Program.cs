@@ -28,9 +28,11 @@ namespace API {
 
             builder.Services.AddCors(options => {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
-                    policy => {
-                        policy.WithOrigins("http://localhost:4200").AllowAnyHeader().WithMethods("PUT", "DELETE", "GET", "POST"); ;
-                    });
+                    policy => policy
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .SetIsOriginAllowed(origin => true)
+                        .AllowCredentials());
             });
 
 
