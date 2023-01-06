@@ -10,7 +10,7 @@ namespace API.Infrastructure {
         private readonly string _secret;
 
         public TokenManager(IConfiguration config) {
-            _secret = config.GetSection("TokenInfo").GetSection("secret").Value ?? "P@ssw0rd";
+            _secret = config.GetSection("TokenInfo").GetSection("secret").Value ?? "";
         }
 
         public JwtSecurityToken? ReadToken(string token) {

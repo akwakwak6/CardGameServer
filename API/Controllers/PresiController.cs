@@ -6,6 +6,7 @@ using API.Infrastructure;
 using BLL.Services;
 using API.SSE;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Principal;
 
 namespace API.Controllers {
     [Route("api/[controller]")]
@@ -41,12 +42,13 @@ namespace API.Controllers {
             }
         }
 
+
         [HttpGet("joinTable")]
         public async Task JoinTable(int tableId,string token) {
 
             int? userId = null;
 
-            if (token != "null") {//TODO can do optional para ?
+            if (token != "null") {//TODO can not send token by EventSource had to send in para, ok ?
                 userId = _TokonSrv.GetUserId(token);
             }
 

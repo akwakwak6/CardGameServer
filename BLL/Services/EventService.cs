@@ -4,7 +4,7 @@ namespace BLL.Services {
     public class EventService {
 
         /*
-         Service to save functions in a singleton
+         Service to save Action in a singleton
          */
         internal Action<PresiTableList> tableEvent;
 
