@@ -11,7 +11,7 @@ namespace DAL.Settings {
                 .IsRequired()
                 .HasMaxLength(50);
 
-            //builder.HasIndex("Email").IsUnique();
+            builder.HasIndex(b => b.Pseudo).IsUnique();
 
         }
 

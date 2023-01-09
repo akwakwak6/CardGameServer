@@ -4,6 +4,7 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(CardGameDbContext))]
-    partial class CardGameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230109123117_init1")]
+    partial class init1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,56 +23,6 @@ namespace DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("Entities.Presi.PresiGame", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("PresiTableId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 1, 9, 15, 37, 37, 554, DateTimeKind.Local).AddTicks(7023));
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PresiGame");
-                });
-
-            modelBuilder.Entity("Entities.Presi.PresiPlayedCards", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("Card")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PlayerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Tour")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("PlayerId");
-
-                    b.ToTable("PresiPlayedCard");
-                });
 
             modelBuilder.Entity("Entities.Presi.PresiPlayer", b =>
                 {
@@ -85,15 +37,10 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<int?>("PresiGameId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PresiTableId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PresiGameId");
 
                     b.HasIndex("PresiTableId");
 
@@ -144,47 +91,16 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Pseudo")
-                        .IsUnique();
-
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Entities.Presi.PresiPlayedCards", b =>
-                {
-                    b.HasOne("Entities.Presi.PresiGame", "Game")
-                        .WithMany()
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Entities.Presi.PresiPlayer", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("Entities.Presi.PresiPlayer", b =>
                 {
-                    b.HasOne("Entities.Presi.PresiGame", null)
-                        .WithMany("PresiPlayers")
-                        .HasForeignKey("PresiGameId");
-
                     b.HasOne("Entities.Presi.PresiTable", null)
                         .WithMany("Players")
                         .HasForeignKey("PresiTableId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Entities.Presi.PresiGame", b =>
-                {
-                    b.Navigation("PresiPlayers");
                 });
 
             modelBuilder.Entity("Entities.Presi.PresiTable", b =>

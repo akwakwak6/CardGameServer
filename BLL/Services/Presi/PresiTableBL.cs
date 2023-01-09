@@ -86,33 +86,6 @@ namespace BLL.Services.Presi {
             UpdateDataTable();
         }
 
-        private void ExchangeCard() {
-            int presiI = _Players.FindIndex(p => p.Player.Role == PresiRoles.President);
-            int bumI = _Players.FindIndex(p => p.Player.Role == PresiRoles.Bum);
-            //TODO redo this code cleaner, too redundant
-            if (presiI != -1 && bumI != -1) {
-                _Players[presiI].ExhangeSelected.ForEach(c => _Players[bumI].Cards.Add(c));
-                _Players[bumI].ExhangeSelected.ForEach(c => _Players[presiI].Cards.Add(c));
-                _Players[presiI].Cards.Sort((a, b) => a % 13 - b % 13);
-                _Players[bumI].Cards.Sort((a, b) => a % 13 - b % 13);
-                _Players[presiI].NewCards = _Players[bumI].ExhangeSelected;
-                _Players[bumI].NewCards = _Players[presiI].ExhangeSelected;
-            }
-
-            int vicePresiI = _Players.FindIndex(p => p.Player.Role == PresiRoles.VicePresident);
-            int viceBumI = _Players.FindIndex(p => p.Player.Role == PresiRoles.ViceBum);
-
-            if (vicePresiI != -1 && viceBumI != -1) {
-                _Players[vicePresiI].ExhangeSelected.ForEach(c => _Players[viceBumI].Cards.Add(c));
-                _Players[viceBumI].ExhangeSelected.ForEach(c => _Players[vicePresiI].Cards.Add(c));
-                _Players[vicePresiI].Cards.Sort((a, b) => a % 13 - b % 13);
-                _Players[viceBumI].Cards.Sort((a, b) => a % 13 - b % 13);
-                _Players[vicePresiI].NewCards = _Players[viceBumI].ExhangeSelected;
-                _Players[viceBumI].NewCards = _Players[vicePresiI].ExhangeSelected;
-            }
-
-        }
-
         public void SetCards(int playerId, List<int> cards) {
 
             //Check if player can play
@@ -164,6 +137,34 @@ namespace BLL.Services.Presi {
 
             UpdateDataTable();
 
+
+        }
+
+
+        private void ExchangeCard() {
+            int presiI = _Players.FindIndex(p => p.Player.Role == PresiRoles.President);
+            int bumI = _Players.FindIndex(p => p.Player.Role == PresiRoles.Bum);
+            //TODO redo this code cleaner, too redundant
+            if (presiI != -1 && bumI != -1) {
+                _Players[presiI].ExhangeSelected.ForEach(c => _Players[bumI].Cards.Add(c));
+                _Players[bumI].ExhangeSelected.ForEach(c => _Players[presiI].Cards.Add(c));
+                _Players[presiI].Cards.Sort((a, b) => a % 13 - b % 13);
+                _Players[bumI].Cards.Sort((a, b) => a % 13 - b % 13);
+                _Players[presiI].NewCards = _Players[bumI].ExhangeSelected;
+                _Players[bumI].NewCards = _Players[presiI].ExhangeSelected;
+            }
+
+            int vicePresiI = _Players.FindIndex(p => p.Player.Role == PresiRoles.VicePresident);
+            int viceBumI = _Players.FindIndex(p => p.Player.Role == PresiRoles.ViceBum);
+
+            if (vicePresiI != -1 && viceBumI != -1) {
+                _Players[vicePresiI].ExhangeSelected.ForEach(c => _Players[viceBumI].Cards.Add(c));
+                _Players[viceBumI].ExhangeSelected.ForEach(c => _Players[vicePresiI].Cards.Add(c));
+                _Players[vicePresiI].Cards.Sort((a, b) => a % 13 - b % 13);
+                _Players[viceBumI].Cards.Sort((a, b) => a % 13 - b % 13);
+                _Players[vicePresiI].NewCards = _Players[viceBumI].ExhangeSelected;
+                _Players[viceBumI].NewCards = _Players[vicePresiI].ExhangeSelected;
+            }
 
         }
 

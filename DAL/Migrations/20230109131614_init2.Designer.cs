@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(CardGameDbContext))]
-    [Migration("20221228140017_init")]
-    partial class init
+    [Migration("20230109131614_init2")]
+    partial class init2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,7 +37,7 @@ namespace DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<int?>("PresiTableId")
+                    b.Property<int>("PresiTableId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -98,7 +98,9 @@ namespace DAL.Migrations
                 {
                     b.HasOne("Entities.Presi.PresiTable", null)
                         .WithMany("Players")
-                        .HasForeignKey("PresiTableId");
+                        .HasForeignKey("PresiTableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Entities.Presi.PresiTable", b =>
