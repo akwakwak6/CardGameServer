@@ -3,10 +3,8 @@
 using API.Infrastructure;
 using API.Mappers;
 using API.Models;
-using API.SSE;
 using BLL.Models;
 using BLL.Services;
-using Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CardGameServer.Controllers {

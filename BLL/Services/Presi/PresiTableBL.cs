@@ -15,6 +15,7 @@ namespace BLL.Services.Presi {
         }
 
         private const int NB_PLAYER_MIN = 3;
+        private const int NB_PLAYER_FOR_ONE_DECK = 5;
 
         private GameState _GS = GameState.INIT;
         private List<PlayerInGame> _Players = new List<PlayerInGame>();
@@ -28,10 +29,7 @@ namespace BLL.Services.Presi {
             if (_GS == GameState.INIT) {
                 if (_Players.Count >= NB_PLAYER_MIN)
                     StartGame();
-            }
-
-
-            if( _GS == GameState.WAITREADY) {
+            }else if( _GS == GameState.WAITREADY) {
                 _Players.Last().Player.IsPlaying = true;
             }
 
@@ -216,7 +214,8 @@ namespace BLL.Services.Presi {
         }
 
         private List<int> SelectWorstCards(List<int> cards, int nb) {
-            return SortCardGoodToBad(cards).Skip(cards.Count - nb).ToList();
+            return cards;
+            //return SortCardGoodToBad(cards).Skip(cards.Count - nb).ToList();
         }
 
         private async Task waitAndStartNewGame() {
@@ -353,8 +352,17 @@ namespace BLL.Services.Presi {
         }
 
         private void DealCards() {
-            
-            List<int> cards = Enumerable.Range(0, 10).ToList();//TODO put 52 | if more than X players add decks
+
+            IEnumerable<int> deck = Enumerable.Range(0, 52);
+            int nbDeck = _Players.Count / NB_PLAYER_FOR_ONE_DECK + 1;
+            List<int> cards = new List<int>();
+
+            for (int i = 0; i < nbDeck; i++) {
+                foreach( int c in deck) { 
+                    cards.Add(c);
+                }
+            }
+
             Random rand = new Random();
             cards = cards.OrderBy( _ => rand.Next()).ToList();
 
